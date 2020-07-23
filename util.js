@@ -2,6 +2,9 @@ var barcodereader;
 (async()=>{
 	barcodereader = await Dynamsoft.BarcodeReader.createInstance();
 	await barcodereader.updateRuntimeSettings('speed');
+	let settings = await barcodereader.getRuntimeSettings();
+	settings.deblurLevel = 0;
+	barcodereader.updateRuntimeSettings(settings);
 
 	document.getElementById('anim-loading').style.display = 'none';
 	btWebGL.disabled = false;
@@ -45,7 +48,6 @@ var ctx2d = canvas2d.getContext('2d');
 
 let gray = null;
 let buffer = null;
-let tmp = null;
 
 function clearOverlay() {
 	let context = overlay.getContext('2d');
@@ -115,7 +117,6 @@ function scanBarcode() {
 	
     if (isWebGL) {
 		gray = new Uint8Array(width * height);
-		tmp = new Uint8Array(width * height * 4);
 
 		var drawInfo = {
 			x: 0,
@@ -137,32 +138,15 @@ function scanBarcode() {
 			buffer
 		);
 		// end = window.performance.now();
-		end = Date.now();
+		// end = Date.now();
 		
-
-		// flip buffer
+		// Grayscale image
 		let gray_index = 0;
-		let flip_index = 0;
-		let h = height;
-		while (h >= 1) { 
-			let index = 4 * width * (h - 1);
-			let end = index + width * 4
-
-			for (; index < end; index++) {
-				tmp[flip_index] = buffer[index];
-
-				if (flip_index % 4 == 0) {
-					gray[gray_index] = tmp[flip_index];
-					gray_index += 1
-				}
-
-				flip_index += 1;
-
-			}
-
-			h -= 1;
+		for (i = 0; i < width * height * 4; i += 4) {
+			gray[gray_index++] = buffer[i];
 		}
-		buffer = tmp;
+
+		end = Date.now();
 
 		// Draw WebGL texture to canvas
 		var imgData = ctx.createImageData(width, height);
@@ -429,6 +413,8 @@ function draw(drawInfo) {
 // with them so we'll pass in the width and height of the texture
 function drawImage(tex, texWidth, texHeight, dstX, dstY) {
   gl.bindTexture(gl.TEXTURE_2D, tex);
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/pixelStorei
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
   // Tell WebGL to use our shader program pair
   gl.useProgram(program);

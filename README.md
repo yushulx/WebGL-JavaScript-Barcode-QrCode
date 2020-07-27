@@ -8,3 +8,6 @@ Use WebGL to convert color image to grayscale image for speeding up barcode deco
 - https://webglfundamentals.org/webgl/lessons/webgl-2d-drawimage.html
 - https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D
 - https://www.dynamsoft.com/help/Barcode-Reader-wasm/classes/barcodereader.html
+
+## Blog
+[How to Use WebGL to Accelerate Web Barcode Decoding Speed](https://www.dynamsoft.com/codepool/webgl-accelerate-web-barcode-decoding-speed.html)

@@ -21,6 +21,8 @@ btCanvas.disabled = true;
 var videoElement = document.getElementById('videoContainer');
 document.getElementById('videoview').style.display = 'block';
 var overlay = document.getElementById('overlay');
+var overlayContext = overlay.getContext('2d');
+
 var canvas = document.getElementById('pcCanvas');
 var ctx = canvas.getContext('2d');
 
@@ -30,31 +32,25 @@ var total = 0;
 var decoding_count = 1;
 var decoding_total = 0;
 
-var width = canvas.width,
-	height = canvas.height;
+var width, height;
 
 var isWebGL = false;
 
 // Initialize canvas
-let canvasWebGL = document.createElement('canvas');
-canvasWebGL.width = width;
-canvasWebGL.height = height;
+var canvasWebGL = document.createElement('canvas');
 var	gl = canvasWebGL.getContext("webgl") || canvasWebGL.getContext("experimental-webgl");
 
-let canvas2d = document.createElement('canvas');
-canvas2d.width = width;
-canvas2d.height = height;
+var canvas2d = document.createElement('canvas');
 var ctx2d = canvas2d.getContext('2d');
 
-let gray = null;
-let buffer = null;
+var gray = null;
+var buffer = null;
 
 function clearOverlay() {
-	let context = overlay.getContext('2d');
-	context.clearRect(0, 0, width, height);
-	context.strokeStyle = '#ff0000';
-	context.lineWidth = 5;
-	return context;
+	overlayContext.clearRect(0, 0, width, height);
+	overlayContext.strokeStyle = '#ff0000';
+	overlayContext.lineWidth = 5;
+	return overlayContext;
 }
 
 function drawResult(context, localization, text) {
@@ -207,6 +203,7 @@ function scanBarcode() {
 			// let decoding_end = window.performance.now();
 			let decoding_end = Date.now();
 			console.log("%c Grayscale image Decoding time cost: " + (decoding_end - decoding_start), 'color: green; font-weight: bold;');
+			console.log("");
 
 			decoding_total += (decoding_end - decoding_start);
 			decoding_count += 1;
@@ -235,6 +232,7 @@ function scanBarcode() {
 			// let decoding_end = window.performance.now();
 			let decoding_end = Date.now();
 			console.log("Color image decoding time cost: " + (decoding_end - decoding_start));
+			console.log("");
 
 			decoding_total += (decoding_end - decoding_start);
 			decoding_count += 1;
@@ -288,6 +286,20 @@ function getStream() {
 function gotStream(stream) {
 	window.stream = stream; 
 	videoElement.srcObject = stream;
+	videoElement.addEventListener("loadedmetadata", function (e) {
+        width = this.videoWidth;
+        height = this.videoHeight;
+		console.log(width, height);
+		canvas.width = width;
+		canvas.height = height;
+		canvasWebGL.width = width;
+		canvasWebGL.height = height;
+		canvas2d.width = width;
+		canvas2d.height = height;
+		overlay.width = width;
+		overlay.height = height;
+
+      }, false);
 }
 
 function handleError(error) {
@@ -369,8 +381,8 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
 function loadImageAndCreateTextureInfo(videoElement) {
   var tex = gl.createTexture();
   var textureInfo = {
-	width: 640,   
-	height: 480,
+	width: width,   
+	height: height,
 	texture: tex,
   };
 

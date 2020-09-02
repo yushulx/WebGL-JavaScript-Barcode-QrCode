@@ -1,5 +1,6 @@
 var barcodereader;
-(async()=>{
+var barcode_result = document.getElementById('barcode_result');
+(async () => {
 	barcodereader = await Dynamsoft.BarcodeReader.createInstance();
 	await barcodereader.updateRuntimeSettings('speed');
 	let settings = await barcodereader.getRuntimeSettings();
@@ -38,7 +39,7 @@ var isWebGL = false;
 
 // Initialize canvas
 var canvasWebGL = document.createElement('canvas');
-var	gl = canvasWebGL.getContext("webgl") || canvasWebGL.getContext("experimental-webgl");
+var gl = canvasWebGL.getContext("webgl") || canvasWebGL.getContext("experimental-webgl");
 
 var canvas2d = document.createElement('canvas');
 var ctx2d = canvas2d.getContext('2d');
@@ -64,12 +65,12 @@ function drawResult(context, localization, text) {
 
 	context.font = '18px Verdana';
 	context.fillStyle = '#ff0000';
-	let x = [ localization.x1, localization.x2, localization.x3, localization.x4 ];
-	let y = [ localization.y1, localization.y2, localization.y3, localization.y4 ];
-	x.sort(function(a, b) {
+	let x = [localization.x1, localization.x2, localization.x3, localization.x4];
+	let y = [localization.y1, localization.y2, localization.y3, localization.y4];
+	x.sort(function (a, b) {
 		return a - b;
 	});
-	y.sort(function(a, b) {
+	y.sort(function (a, b) {
 		return b - a;
 	});
 	let left = x[0];
@@ -86,7 +87,7 @@ function run() {
 	scanBarcode();
 }
 
-btWebGL.onclick = function() {
+btWebGL.onclick = function () {
 	clearOverlay();
 	btWebGL.disabled = true;
 	btCanvas.disabled = false;
@@ -94,7 +95,7 @@ btWebGL.onclick = function() {
 	run();
 };
 
-btCanvas.onclick = function() {
+btCanvas.onclick = function () {
 	clearOverlay();
 	btCanvas.disabled = true;
 	btWebGL.disabled = false;
@@ -110,8 +111,8 @@ function scanBarcode() {
 	let end;
 
 	buffer = new Uint8Array(width * height * 4);
-	
-    if (isWebGL) {
+
+	if (isWebGL) {
 		gray = new Uint8Array(width * height);
 
 		var drawInfo = {
@@ -120,10 +121,10 @@ function scanBarcode() {
 			dx: 1,
 			dy: 1,
 			textureInfo: loadImageAndCreateTextureInfo(videoElement)
-		  };
-		
+		};
+
 		draw(drawInfo);
-		
+
 		gl.readPixels(
 			0,
 			0,
@@ -135,7 +136,7 @@ function scanBarcode() {
 		);
 		// end = window.performance.now();
 		// end = Date.now();
-		
+
 		// Grayscale image
 		let gray_index = 0;
 		for (i = 0; i < width * height * 4; i += 4) {
@@ -146,14 +147,14 @@ function scanBarcode() {
 
 		// Draw WebGL texture to canvas
 		var imgData = ctx.createImageData(width, height);
-		for (var i=0;i < buffer.length; i+=4) {
-			imgData.data[i]   = buffer[i];   //red
-			imgData.data[i+1] = buffer[i+1]; //green
-			imgData.data[i+2] = buffer[i+2]; //blue
-			imgData.data[i+3] = buffer[i+3]; //alpha
+		for (var i = 0; i < buffer.length; i += 4) {
+			imgData.data[i] = buffer[i];   //red
+			imgData.data[i + 1] = buffer[i + 1]; //green
+			imgData.data[i + 2] = buffer[i + 2]; //blue
+			imgData.data[i + 3] = buffer[i + 3]; //alpha
 		}
-		ctx.putImageData(imgData, 0, 0);		
-	} 
+		ctx.putImageData(imgData, 0, 0);
+	}
 	else {
 		ctx2d.drawImage(videoElement, 0, 0, width, height);
 		buffer = ctx2d.getImageData(0, 0, width, height).data;
@@ -169,7 +170,7 @@ function scanBarcode() {
 	}
 	else
 		console.log("Canvas buffer time cost: " + (end - start));
-	
+
 	// total += (end - start);
 	// count += 1;
 	// if (count == 31) {
@@ -189,62 +190,62 @@ function scanBarcode() {
 	if (isWebGL) {
 		// console.time("Grayscale Image");
 		barcodereader
-		.decodeBuffer(
-			gray,
-			width,
-			height,
-			width,
-			Dynamsoft.EnumImagePixelFormat.IPF_GrayScaled
-		)
-		.then((results) => {
-			// console.timeEnd("Grayscale Image");
-			if (!isWebGL) return;
+			.decodeBuffer(
+				gray,
+				width,
+				height,
+				width,
+				Dynamsoft.EnumImagePixelFormat.IPF_GrayScaled
+			)
+			.then((results) => {
+				// console.timeEnd("Grayscale Image");
+				if (!isWebGL) return;
 
-			// let decoding_end = window.performance.now();
-			let decoding_end = Date.now();
-			console.log("%c Grayscale image Decoding time cost: " + (decoding_end - decoding_start), 'color: green; font-weight: bold;');
-			console.log("");
+				// let decoding_end = window.performance.now();
+				let decoding_end = Date.now();
+				console.log("%c Grayscale image Decoding time cost: " + (decoding_end - decoding_start), 'color: green; font-weight: bold;');
+				console.log("");
 
-			decoding_total += (decoding_end - decoding_start);
-			decoding_count += 1;
-			if (decoding_count == 31) {
-				// console.log("%c Average Decoding time cost: " + decoding_total / 30, 'color: green; font-weight: bold;');
-				decoding_count = 1;
-				decoding_total = 0;
-			}
-			showResults(results);
-		});
+				decoding_total += (decoding_end - decoding_start);
+				decoding_count += 1;
+				if (decoding_count == 31) {
+					// console.log("%c Average Decoding time cost: " + decoding_total / 30, 'color: green; font-weight: bold;');
+					decoding_count = 1;
+					decoding_total = 0;
+				}
+				showResults(results);
+			});
 	}
 	else {
 		// console.time("Color Image");
 		barcodereader
-		.decodeBuffer(
-			buffer,
-			width,
-			height,
-			width * 4,
-			Dynamsoft.EnumImagePixelFormat.IPF_ARGB_8888
-		)
-		.then((results) => {
-			// console.timeEnd("Color Image");
-			if (isWebGL) return;
+			.decodeBuffer(
+				buffer,
+				width,
+				height,
+				width * 4,
+				Dynamsoft.EnumImagePixelFormat.IPF_ARGB_8888
+			)
+			.then((results) => {
+				// console.timeEnd("Color Image");
+				if (isWebGL) return;
 
-			// let decoding_end = window.performance.now();
-			let decoding_end = Date.now();
-			console.log("Color image decoding time cost: " + (decoding_end - decoding_start));
-			console.log("");
+				// let decoding_end = window.performance.now();
+				let decoding_end = Date.now();
+				console.log("Color image decoding time cost: " + (decoding_end - decoding_start));
+				console.log("");
 
-			decoding_total += (decoding_end - decoding_start);
-			decoding_count += 1;
-			if (decoding_count == 31) {
-				// console.log("Average Decoding time cost: " + decoding_total / 30);
-				decoding_count = 1;
-				decoding_total = 0;
-			}
-			showResults(results);
-		});
+				decoding_total += (decoding_end - decoding_start);
+				decoding_count += 1;
+				if (decoding_count == 31) {
+					// console.log("Average Decoding time cost: " + decoding_total / 30);
+					decoding_count = 1;
+					decoding_total = 0;
+				}
+				showResults(results);
+			});
 	}
-	
+
 }
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices).then(getStream).catch(handleError);
@@ -267,7 +268,7 @@ function gotDevices(deviceInfos) {
 
 function getStream() {
 	if (window.stream) {
-		window.stream.getTracks().forEach(function(track) {
+		window.stream.getTracks().forEach(function (track) {
 			track.stop();
 		});
 	}
@@ -275,8 +276,8 @@ function getStream() {
 	var constraints = {
 		video: {
 			deviceId: videoSelect.value,
-			width: { min: 640},
-			height: { min: 480},
+			width: { min: 640 },
+			height: { min: 480 },
 		}
 	};
 
@@ -284,11 +285,11 @@ function getStream() {
 }
 
 function gotStream(stream) {
-	window.stream = stream; 
+	window.stream = stream;
 	videoElement.srcObject = stream;
 	videoElement.addEventListener("loadedmetadata", function (e) {
-        width = this.videoWidth;
-        height = this.videoHeight;
+		width = this.videoWidth;
+		height = this.videoHeight;
 		console.log(width, height);
 		canvas.width = width;
 		canvas.height = height;
@@ -299,7 +300,7 @@ function gotStream(stream) {
 		overlay.width = width;
 		overlay.height = height;
 
-      }, false);
+	}, false);
 }
 
 function handleError(error) {
@@ -312,18 +313,21 @@ function showResults(results) {
 	let txts = [];
 	try {
 		let localization;
-		for (var i = 0; i < results.length; ++i) {
-			txts.push(results[i].BarcodeText);
-			localization = results[i].LocalizationResult;
-			drawResult(context, localization, results[i].BarcodeText);
+		if (results.length > 0) {
+			for (var i = 0; i < results.length; ++i) {
+				txts.push(results[i].BarcodeText);
+				localization = results[i].LocalizationResult;
+				drawResult(context, localization, results[i].BarcodeText);
+			}
+			barcode_result.textContent = txts.join(', ');
 		}
-		barcode_result.textContent = txts.join(', ');
+		else {
+			barcode_result.textContent = "No barcode found";
+		}
 
-		if (isVideoMode) {
-			scanBarcode();
-		}
-	} catch (e) {
 		scanBarcode();
+	} catch (e) {
+		alert(e);
 	}
 }
 
@@ -351,12 +355,12 @@ gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
 // Put a unit quad in the buffer
 var positions = [
-  0, 0,
-  0, 1,
-  1, 0,
-  1, 0,
-  0, 1,
-  1, 1,
+	0, 0,
+	0, 1,
+	1, 0,
+	1, 0,
+	0, 1,
+	1, 1,
 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
@@ -366,12 +370,12 @@ gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
 
 // Put texcoords in the buffer
 var texcoords = [
-  0, 0,
-  0, 1,
-  1, 0,
-  1, 0,
-  0, 1,
-  1, 1,
+	0, 0,
+	0, 1,
+	1, 0,
+	1, 0,
+	0, 1,
+	1, 1,
 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
 
@@ -379,82 +383,82 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
 // The texture will start with 1x1 pixels and be updated
 // when the image has loaded
 function loadImageAndCreateTextureInfo(videoElement) {
-  var tex = gl.createTexture();
-  var textureInfo = {
-	width: width,   
-	height: height,
-	texture: tex,
-  };
+	var tex = gl.createTexture();
+	var textureInfo = {
+		width: width,
+		height: height,
+		texture: tex,
+	};
 
-  gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
-  gl.texImage2D(
-			gl.TEXTURE_2D,
-			0,
-			gl.RGBA,
-			gl.RGBA,
-			gl.UNSIGNED_BYTE,
-			videoElement
-		);
+	gl.bindTexture(gl.TEXTURE_2D, textureInfo.texture);
+	gl.texImage2D(
+		gl.TEXTURE_2D,
+		0,
+		gl.RGBA,
+		gl.RGBA,
+		gl.UNSIGNED_BYTE,
+		videoElement
+	);
 
-  // let's assume all images are not a power of 2
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+	// let's assume all images are not a power of 2
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-  return textureInfo;
+	return textureInfo;
 }
 
 function draw(drawInfo) {
-  // webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+	// webglUtils.resizeCanvasToDisplaySize(gl.canvas);
 
-  // Tell WebGL how to convert from clip space to pixels
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	// Tell WebGL how to convert from clip space to pixels
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-  gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT);
 
-  drawImage(
-	  drawInfo.textureInfo.texture,
-	  drawInfo.textureInfo.width,
-	  drawInfo.textureInfo.height,
-	  drawInfo.x,
-	  drawInfo.y);
+	drawImage(
+		drawInfo.textureInfo.texture,
+		drawInfo.textureInfo.width,
+		drawInfo.textureInfo.height,
+		drawInfo.x,
+		drawInfo.y);
 }
 
 // Unlike images, textures do not have a width and height associated
 // with them so we'll pass in the width and height of the texture
 function drawImage(tex, texWidth, texHeight, dstX, dstY) {
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/pixelStorei
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+	// https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/pixelStorei
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-  // Tell WebGL to use our shader program pair
-  gl.useProgram(program);
+	// Tell WebGL to use our shader program pair
+	gl.useProgram(program);
 
-  // Setup the attributes to pull data from our buffers
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  gl.enableVertexAttribArray(positionLocation);
-  gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-  gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-  gl.enableVertexAttribArray(texcoordLocation);
-  gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+	// Setup the attributes to pull data from our buffers
+	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+	gl.enableVertexAttribArray(positionLocation);
+	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+	gl.enableVertexAttribArray(texcoordLocation);
+	gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
-  // this matrix will convert from pixels to clip space
-  var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+	// this matrix will convert from pixels to clip space
+	var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
 
-  // this matrix will translate our quad to dstX, dstY
-  matrix = m4.translate(matrix, dstX, dstY, 0);
+	// this matrix will translate our quad to dstX, dstY
+	matrix = m4.translate(matrix, dstX, dstY, 0);
 
-  // this matrix will scale our 1 unit quad
-  // from 1 unit to texWidth, texHeight units
-  matrix = m4.scale(matrix, texWidth, texHeight, 1);
+	// this matrix will scale our 1 unit quad
+	// from 1 unit to texWidth, texHeight units
+	matrix = m4.scale(matrix, texWidth, texHeight, 1);
 
-  // Set the matrix.
-  gl.uniformMatrix4fv(matrixLocation, false, matrix);
+	// Set the matrix.
+	gl.uniformMatrix4fv(matrixLocation, false, matrix);
 
-  // Tell the shader to get the texture from texture unit 0
-  gl.uniform1i(textureLocation, 0);
+	// Tell the shader to get the texture from texture unit 0
+	gl.uniform1i(textureLocation, 0);
 
-  // draw the quad (2 triangles, 6 vertices)
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+	// draw the quad (2 triangles, 6 vertices)
+	gl.drawArrays(gl.TRIANGLES, 0, 6);
 }

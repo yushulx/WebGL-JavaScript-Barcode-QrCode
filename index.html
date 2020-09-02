@@ -24,14 +24,14 @@
       z-index: 2
     }
 
-     .row {
+    .row {
       width: 100%;
       display: flex;
       flex-direction: row;
       justify-content: left;
-    } 
+    }
   </style>
-  
+
 </head>
 
 <body>
@@ -50,12 +50,14 @@
       <canvas id="overlay"></canvas>
     </div>
     <div><canvas id="pcCanvas"></canvas></div>
-</div>
-</body>
-<script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@7.6.0/dist/dbr.js" data-productKeys="LICENSE-KEY"></script>
-<script src="webgl-utils.js"></script>
-<script src="m4.js"></script>
-<script id="drawImage-vertex-shader" type="x-shader/x-vertex">
+  </div>
+  <div id="barcode_result"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@7.6.0/dist/dbr.js"
+    data-productKeys="LICENSE-KEY"></script>
+  <script src="webgl-utils.js"></script>
+  <script src="m4.js"></script>
+  <script id="drawImage-vertex-shader" type="x-shader/x-vertex">
   attribute vec4 a_position;
   attribute vec2 a_texcoord;
   
@@ -83,5 +85,7 @@
     gl_FragColor = vec4(sample.r * u_colorFactor + grey * (1.0 - u_colorFactor), sample.g * u_colorFactor + grey * (1.0 - u_colorFactor), sample.b * u_colorFactor + grey * (1.0 - u_colorFactor), 1.0);
   }
   </script>
-<script src="util.js"></script>
+  <script src="util.js"></script>
+</body>
+
 </html>

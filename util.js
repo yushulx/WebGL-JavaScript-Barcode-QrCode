@@ -274,7 +274,7 @@ function getStream() {
 
 	var constraints = {
 		video: {
-			deviceId: { exact: videoSelect.value },
+			deviceId: videoSelect.value,
 			width: { min: 640},
 			height: { min: 480},
 		}

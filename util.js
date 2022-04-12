@@ -1,7 +1,7 @@
 var barcodereader;
 var barcode_result = document.getElementById('barcode_result');
 (async () => {
-	barcodereader = await Dynamsoft.BarcodeReader.createInstance();
+	barcodereader = await Dynamsoft.DBR.BarcodeReader.createInstance();
 	await barcodereader.updateRuntimeSettings('speed');
 	let settings = await barcodereader.getRuntimeSettings();
 	settings.deblurLevel = 0;
@@ -195,7 +195,7 @@ function scanBarcode() {
 				width,
 				height,
 				width,
-				Dynamsoft.EnumImagePixelFormat.IPF_GrayScaled
+				Dynamsoft.DBR.EnumImagePixelFormat.IPF_GrayScaled
 			)
 			.then((results) => {
 				// console.timeEnd("Grayscale Image");
@@ -224,7 +224,7 @@ function scanBarcode() {
 				width,
 				height,
 				width * 4,
-				Dynamsoft.EnumImagePixelFormat.IPF_ARGB_8888
+				Dynamsoft.DBR.EnumImagePixelFormat.IPF_ARGB_8888
 			)
 			.then((results) => {
 				// console.timeEnd("Color Image");
@@ -248,6 +248,7 @@ function scanBarcode() {
 
 }
 
+console.time('devices');
 navigator.mediaDevices.enumerateDevices().then(gotDevices).then(getStream).catch(handleError);
 
 videoSelect.onchange = getStream;
@@ -315,9 +316,9 @@ function showResults(results) {
 		let localization;
 		if (results.length > 0) {
 			for (var i = 0; i < results.length; ++i) {
-				txts.push(results[i].BarcodeText);
-				localization = results[i].LocalizationResult;
-				drawResult(context, localization, results[i].BarcodeText);
+				txts.push(results[i].barcodeText);
+				localization = results[i].localizationResult;
+				drawResult(context, localization, results[i].barcodeText);
 			}
 			barcode_result.textContent = txts.join(', ');
 		}

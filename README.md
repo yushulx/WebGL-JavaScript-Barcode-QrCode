@@ -1,7 +1,16 @@
-# JavaScript Barcode Reader: WebGL vs Canvas
-Use WebGL to convert color image to grayscale image for speeding up barcode decoding in JavaScript.
+# JavaScript Barcode and QR Code Reader: WebGL vs Canvas
+Use WebGL to convert color image to grayscale image for speeding up barcode and QR code decoding in JavaScript.
 
-## Screenshot
+## License Activation
+Get a [trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dbr) to activate the [JavaScript barcode SDK](https://www.dynamsoft.com/barcode-reader/sdk-javascript/):
+
+```
+Dynamsoft.DBR.BarcodeReader.productKeys = "LICENSE-KEY";
+```
+
+## Try Example
+[https://yushulx.me/WebGL-JavaScript-Barcode-QrCode/](https://yushulx.me/WebGL-JavaScript-Barcode-QrCode/)
+
 ![WebGL for JavaScript barcode](https://www.dynamsoft.com/codepool/wp-content/uploads/2020/07/webgl-javascript-barcode.png)
 
 ## Reference
